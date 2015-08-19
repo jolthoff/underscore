@@ -153,20 +153,33 @@
   // The cornerstone, an `each` implementation, aka `forEach`.
   // Handles raw objects in addition to array-likes. Treats all
   // sparse array-likes as if they were dense.
-  _.each = _.forEach = function(obj, iteratee, context) {
+  _.each = _.forEach = function(obj, iteratee, context, predicate) {
     iteratee = optimizeCb(iteratee, context);
-    var i, length;
+    var i, length, clone;
+    if (predicate === undefined) {
+      predicate = function() { return; };
+    }
     if (isArrayLike(obj)) {
       for (i = 0, length = obj.length; i < length; i++) {
         iteratee(obj[i], i, obj);
+        if (predicate(obj[i])) {
+          clone = obj.slice(0, i);
+          break;
+        }
       }
     } else {
+      clone = obj === null ? null : {};
       var keys = _.keys(obj);
       for (i = 0, length = keys.length; i < length; i++) {
         iteratee(obj[keys[i]], keys[i], obj);
+        if (predicate(obj[keys[i]])) {
+          break;
+        }
+
+        clone[keys[i]] = obj[keys[i]]
       }
     }
-    return obj;
+    return clone || obj;
   };
 
   // Return the results of applying the iteratee to each element.
