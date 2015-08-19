@@ -43,6 +43,14 @@
     var a = [1, 2, 3];
     strictEqual(_.each(a, function(){}), a);
     strictEqual(_.each(null, function(){}), null);
+
+    /// Break test
+    var expectedBreak = [1];
+    deepEqual(_.each([1,4,3,6,9,8,9], function() {}, undefined, function(value) {return value % 2 === 0}), expectedBreak, "testing for break against arrays");
+
+    var expectedBreak = {foo: 5, hack: 2};
+    deepEqual(_.each({"foo": 5, "hack": 2, "maybe": "5"}, function() {}, undefined, function(value) {return typeof value === "string"}), expectedBreak, "testing for break against objects");
+
   });
 
   test('forEach', function() {
